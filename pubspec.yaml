@@ -1,0 +1,22 @@
+name: cat_avatar_generator
+description: Generate awesome cat avatars from mails, names, anything on fly!
+version: 0.0.1
+author: Mateusz Muszyński <timusziomek@gmail.com>
+homepage: https://github.com/Timu5/cat_avatar_generator
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  image: ^2.1.19
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/avatars/
+
