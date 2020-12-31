@@ -2,7 +2,9 @@
 
 Generate awesome cat avatars from mails, names, anything on fly!
 
-![Screenshot_1609418364](https://user-images.githubusercontent.com/5563731/103411109-a2845780-4b6e-11eb-901d-28ab281004fe.png)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/5563731/103411109-a2845780-4b6e-11eb-901d-28ab281004fe.png"/>
+</p>
 
 ## Usage
 
