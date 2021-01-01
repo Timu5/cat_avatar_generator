@@ -8,7 +8,10 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:image/image.dart' as img;
 
 class Meowatar {
-  static Map<int, Image> imageCache = {};
+  /// [img.Image] cache.
+  static Map<int, img.Image> imageCache = {};
+
+  /// PNG cache.
   static Map<int, List<int>> pngCache = {};
 
   int _seed;
@@ -30,6 +33,7 @@ class Meowatar {
         .asUint8List());
   }
 
+  /// Convert seed into [img.Image]
   Future<img.Image> draw(int seed) async {
     if (imageCache.containsKey(seed)) return imageCache[seed];
 
@@ -46,6 +50,7 @@ class Meowatar {
         accessorie);
   }
 
+  /// Generate png in binary format from seed value
   Future<List<int>> asBytes(int seed) async {
     if (pngCache.containsKey(seed)) return pngCache[seed];
     return pngCache[seed] = img.encodePng(await draw(seed), level: 0);
