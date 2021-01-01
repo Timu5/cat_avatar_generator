@@ -1,6 +1,6 @@
 name: cat_avatar_generator
 description: Generate awesome cat avatars from mails, names, anything on fly!
-version: 0.0.1+2
+version: 0.0.2
 author: Mateusz Muszyński <timusziomek@gmail.com>
 homepage: https://github.com/Timu5/cat_avatar_generator
 

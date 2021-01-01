@@ -3,7 +3,7 @@
 Generate awesome cat avatars from mails, names, anything on fly!
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/5563731/103411109-a2845780-4b6e-11eb-901d-28ab281004fe.png"/>
+<img src="https://user-images.githubusercontent.com/5563731/103439379-b1394000-4c3c-11eb-8c9f-92ddfb7a2681.png"/>
 </p>
 
 ## Usage
@@ -12,7 +12,7 @@ Add to pubspec.yaml:
 
 ```yaml
 dependencies:
-  cat_avatar_generator: ^0.0.1
+  cat_avatar_generator: ^0.0.2
 ```
 
 Add import:
@@ -22,25 +22,11 @@ import 'package:cat_avatar_generator/cat_avatar_generator.dart';
 
 Generate avatar:
 ```dart
-  List<int> avatarData;
-
-  void generateAvatar() async {
-    Meowatar avatar = Meowatar();
-    avatarData = await avatar.asBytes("a@a.com".hashCode);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    generateAvatar();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
         color: Colors.white,
-        child: avatarData == null ? null : Image.memory(avatarData));
+        child: Image(image: MeowatarImage.fromString("a@a.com")));
   }
 ```
 
