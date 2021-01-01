@@ -4,6 +4,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:image/image.dart';
 
 class Meowatar {
+  static Map<int, Image> imageCache = {};
+  static Map<int, List<int>> pngCache = {};
+
   int _seed;
 
   int _random({max = 128, min = 0}) {
@@ -13,13 +16,19 @@ class Meowatar {
   }
 
   Future<Image> _getPart(String name, int n) async {
-    return decodePng((await rootBundle
-            .load("packages/cat_avatar_generator/assets/avatars/" + name + "_" + n.toString() + ".png"))
+    return decodePng((await rootBundle.load(
+            "packages/cat_avatar_generator/assets/avatars/" +
+                name +
+                "_" +
+                n.toString() +
+                ".png"))
         .buffer
         .asUint8List());
   }
 
   Future<Image> draw(int seed) async {
+    if (imageCache.containsKey(seed)) return imageCache[seed];
+
     this._seed = seed;
     Image body = await _getPart("body", _random(min: 1, max: 15));
     Image fur = await _getPart("fur", _random(min: 1, max: 10));
@@ -27,11 +36,12 @@ class Meowatar {
     Image mouth = await _getPart("mouth", _random(min: 1, max: 10));
     Image accessorie = await _getPart("accessorie", _random(min: 1, max: 20));
 
-    return drawImage(
+    return imageCache[seed] = drawImage(
         drawImage(drawImage(drawImage(body, fur), eyes), mouth), accessorie);
   }
 
   Future<List<int>> asBytes(int seed) async {
-    return encodePng(await draw(seed), level: 0);
+    if (pngCache.containsKey(seed)) return pngCache[seed];
+    return pngCache[seed] = encodePng(await draw(seed), level: 0);
   }
 }
