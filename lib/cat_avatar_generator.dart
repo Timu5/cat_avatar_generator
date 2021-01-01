@@ -62,7 +62,7 @@ class MeowatarImage extends ImageProvider<MeowatarImage> {
   /// Creates an object that converts seed value into an image.
   ///
   /// The arguments must not be null.
-  MeowatarImage(this.seed, {this.scale = 1.0})
+  const MeowatarImage(this.seed, {this.scale = 1.0})
       : assert(seed != null),
         assert(scale != null);
 
@@ -71,12 +71,11 @@ class MeowatarImage extends ImageProvider<MeowatarImage> {
   /// The arguments must not be null.
   MeowatarImage.fromString(String text, {this.scale = 1.0})
       : assert(text != null),
-        assert(scale != null) {
-    this.seed = text.hashCode;
-  }
+        assert(scale != null),
+        seed = text.hashCode;
 
   /// Seed used to generate avatar
-  int seed;
+  final int seed;
 
   /// The scale to place in the [ImageInfo] object of the image.
   final double scale;
