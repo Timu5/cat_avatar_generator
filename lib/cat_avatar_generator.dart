@@ -1,5 +1,6 @@
 library cat_avatar_generator;
 
+import 'dart:typed_data';
 import 'dart:ui' as ui show Codec;
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -14,7 +15,7 @@ class Meowatar {
   /// PNG cache.
   static Map<int, List<int>> pngCache = {};
 
-  int _seed;
+  int _seed = 0;
 
   int _random({max = 128, min = 0}) {
     int v = 16807 * (this._seed % 127773) - 2836 * (this._seed ~/ 127773);
@@ -22,7 +23,7 @@ class Meowatar {
     return min + (this._seed = v) % (max - min + 1);
   }
 
-  Future<img.Image> _getPart(String name, int n) async {
+  Future<img.Image?> _getPart(String name, int n) async {
     return img.decodePng((await rootBundle.load(
             "packages/cat_avatar_generator/assets/avatars/" +
                 name +
@@ -34,16 +35,21 @@ class Meowatar {
   }
 
   /// Convert seed into [img.Image]
-  Future<img.Image> draw(int seed) async {
+  Future<img.Image?> draw(int seed) async {
     if (imageCache.containsKey(seed)) return imageCache[seed];
 
     this._seed = seed;
-    img.Image body = await _getPart("body", _random(min: 1, max: 15));
-    img.Image fur = await _getPart("fur", _random(min: 1, max: 10));
-    img.Image eyes = await _getPart("eyes", _random(min: 1, max: 15));
-    img.Image mouth = await _getPart("mouth", _random(min: 1, max: 10));
+    img.Image body = await (_getPart("body", _random(min: 1, max: 15))
+        as FutureOr<img.Image>);
+    img.Image fur = await (_getPart("fur", _random(min: 1, max: 10))
+        as FutureOr<img.Image>);
+    img.Image eyes = await (_getPart("eyes", _random(min: 1, max: 15))
+        as FutureOr<img.Image>);
+    img.Image mouth = await (_getPart("mouth", _random(min: 1, max: 10))
+        as FutureOr<img.Image>);
     img.Image accessorie =
-        await _getPart("accessorie", _random(min: 1, max: 20));
+        await (_getPart("accessorie", _random(min: 1, max: 20))
+            as FutureOr<img.Image>);
 
     return imageCache[seed] = img.drawImage(
         img.drawImage(img.drawImage(img.drawImage(body, fur), eyes), mouth),
@@ -51,28 +57,21 @@ class Meowatar {
   }
 
   /// Generate png in binary format from seed value
-  Future<List<int>> asBytes(int seed) async {
+  Future<List<int>?> asBytes(int seed) async {
     if (pngCache.containsKey(seed)) return pngCache[seed];
-    return pngCache[seed] = img.encodePng(await draw(seed), level: 0);
+    return pngCache[seed] =
+        img.encodePng(await (draw(seed) as FutureOr<img.Image>), level: 0);
   }
 }
 
 @immutable
 class MeowatarImage extends ImageProvider<MeowatarImage> {
   /// Creates an object that converts seed value into an image.
-  ///
-  /// The arguments must not be null.
-  const MeowatarImage(this.seed, {this.scale = 1.0})
-      : assert(seed != null),
-        assert(scale != null);
+  const MeowatarImage(this.seed, {this.scale = 1.0});
 
   /// Creates an object that converts string value into an image.
-  ///
-  /// The arguments must not be null.
   MeowatarImage.fromString(String text, {this.scale = 1.0})
-      : assert(text != null),
-        assert(scale != null),
-        seed = text.hashCode;
+      : seed = text.hashCode;
 
   /// Seed used to generate avatar
   final int seed;
@@ -97,7 +96,7 @@ class MeowatarImage extends ImageProvider<MeowatarImage> {
   Future<ui.Codec> _loadAsync(MeowatarImage key, DecoderCallback decode) async {
     assert(key == this);
 
-    return decode(await Meowatar().asBytes(seed));
+    return decode(await (Meowatar().asBytes(seed) as FutureOr<Uint8List>));
   }
 
   @override

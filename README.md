@@ -12,7 +12,7 @@ Add to pubspec.yaml:
 
 ```yaml
 dependencies:
-  cat_avatar_generator: ^0.0.2
+  cat_avatar_generator: ^0.1.0
 ```
 
 Add import:
