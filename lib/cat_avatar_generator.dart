@@ -3,6 +3,7 @@ library cat_avatar_generator;
 import 'dart:typed_data';
 import 'dart:ui' as ui show Codec;
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -39,28 +40,39 @@ class Meowatar {
     if (imageCache.containsKey(seed)) return imageCache[seed];
 
     this._seed = seed;
-    img.Image body = await (_getPart("body", _random(min: 1, max: 15))
-        as FutureOr<img.Image>);
-    img.Image fur = await (_getPart("fur", _random(min: 1, max: 10))
-        as FutureOr<img.Image>);
-    img.Image eyes = await (_getPart("eyes", _random(min: 1, max: 15))
-        as FutureOr<img.Image>);
-    img.Image mouth = await (_getPart("mouth", _random(min: 1, max: 10))
-        as FutureOr<img.Image>);
-    img.Image accessorie =
-        await (_getPart("accessorie", _random(min: 1, max: 20))
-            as FutureOr<img.Image>);
+    img.Image? body = await (_getPart("body", _random(min: 1, max: 15)));
+    img.Image? fur = await (_getPart("fur", _random(min: 1, max: 10)));
+    img.Image? eyes = await (_getPart("eyes", _random(min: 1, max: 15)));
+    img.Image? mouth = await (_getPart("mouth", _random(min: 1, max: 10)));
+    img.Image? accessorie =
+        await (_getPart("accessorie", _random(min: 1, max: 20)));
+
+    if (body == null ||
+        fur == null ||
+        eyes == null ||
+        mouth == null ||
+        accessorie == null) return null;
 
     return imageCache[seed] = img.drawImage(
         img.drawImage(img.drawImage(img.drawImage(body, fur), eyes), mouth),
         accessorie);
   }
 
-  /// Generate png in binary format from seed value
-  Future<List<int>?> asBytes(int seed) async {
-    if (pngCache.containsKey(seed)) return pngCache[seed];
-    return pngCache[seed] =
-        img.encodePng(await (draw(seed) as FutureOr<img.Image>), level: 0);
+  /// Generate png as a list of ints from seed value
+  Future<List<int>> asBytes(int seed) async {
+    var cache = pngCache[seed];
+    if (cache != null) {
+      return cache;
+    }
+    var image = await draw(seed);
+    if (image != null) {
+      return pngCache[seed] = img.encodePng(image, level: 0);
+    }
+    // return 1x1 transparent image as fallback
+    return base64
+        .decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=")
+        .toList();
   }
 }
 
@@ -95,8 +107,8 @@ class MeowatarImage extends ImageProvider<MeowatarImage> {
 
   Future<ui.Codec> _loadAsync(MeowatarImage key, DecoderCallback decode) async {
     assert(key == this);
-
-    return decode(await (Meowatar().asBytes(seed) as FutureOr<Uint8List>));
+    var data = await Meowatar().asBytes(seed);
+    return decode(Uint8List.fromList(data));
   }
 
   @override
